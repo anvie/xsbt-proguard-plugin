@@ -45,6 +45,7 @@ object ProguardPlugin extends Build with PublishSettings {
 		name := "xsbt-proguard-plugin",
 		organization := "com.github.siasia",
 		version := "0.1.2",
+		scalaVersion := "2.9.1",
 		libraryDependencies += "net.sf.proguard" % "proguard-base" % "4.7",
 		scalacOptions += "-deprecation",
 		publishMavenStyle := true,
