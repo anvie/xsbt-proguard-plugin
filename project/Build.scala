@@ -4,7 +4,7 @@ import Keys._
 
 import scala.xml.{Elem, Node}
 
-object ProguardPlugin extends Build {
+object ProguardPlugin extends Build with PublishSettings {
 	def pomPostProcessTask(node: Node) = node match {
 		case xml: Elem =>
 			val children = Seq(
@@ -39,27 +39,26 @@ object ProguardPlugin extends Build {
 	def rootSettings: Seq[Setting[_]] = Seq(
 		scriptedBufferLog := false,
 		sbtPlugin := true,
-		projectID <<= (organization,moduleName,version,artifacts,crossPaths){ (org,module,version,as,crossEnabled) =>
-			ModuleID(org, module, version).cross(crossEnabled).artifacts(as : _*)
-		},
+        // projectID <<= (organization,moduleName,version,artifacts,crossPaths){ (org,module,version,as,crossEnabled) =>
+        //  ModuleID(org, module, version).cross(crossEnabled).artifacts(as : _*)
+        // },
 		name := "xsbt-proguard-plugin",
 		organization := "com.github.siasia",
-		scalaVersion := "2.9.1",
-		version <<= sbtVersion(_ + "-0.1.2"),
+		version := "0.1.2",
 		libraryDependencies += "net.sf.proguard" % "proguard-base" % "4.7",
 		scalacOptions += "-deprecation",
 		publishMavenStyle := true,
-		publishTo <<= (version) {
-			version: String =>
-			val ossSonatype = "http://scala.repo.ansvia.com/nexus"
-			if (version.trim.endsWith("SNAPSHOT"))
-				Some("snapshots" at ossSonatype + "/content/repositories/snapshots") 
-			else
-				Some("releases" at ossSonatype + "/content/repositories/releases")
-		},
-		credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
+		crossPaths := false,
+		publishArtifact in Test := false,
+        // publishTo <<= (version) {
+        //  version: String =>
+        //  val ossSonatype = "https://oss.sonatype.org/"
+        //  if (version.trim.endsWith("SNAPSHOT"))
+        //      Some("snapshots" at ossSonatype + "content/repositories/snapshots") 
+        //  else None
+        // },
+        // credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
 		pomIncludeRepository := ((_) => false),
-		pomPostProcess := (pomPostProcessTask _))
+		pomPostProcess := (pomPostProcessTask _)) ++ withPublishing
 	lazy val root = Project("root", file(".")) settings(scriptedSettings ++ rootSettings :_*)
 }
-
