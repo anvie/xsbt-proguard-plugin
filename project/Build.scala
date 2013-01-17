@@ -44,19 +44,22 @@ object ProguardPlugin extends Build {
 		},
 		name := "xsbt-proguard-plugin",
 		organization := "com.github.siasia",
+		scalaVersion := "2.9.1",
 		version <<= sbtVersion(_ + "-0.1.2"),
 		libraryDependencies += "net.sf.proguard" % "proguard-base" % "4.7",
 		scalacOptions += "-deprecation",
 		publishMavenStyle := true,
 		publishTo <<= (version) {
 			version: String =>
-			val ossSonatype = "https://oss.sonatype.org/"
+			val ossSonatype = "http://scala.repo.ansvia.com/nexus"
 			if (version.trim.endsWith("SNAPSHOT"))
-				Some("snapshots" at ossSonatype + "content/repositories/snapshots") 
-			else None
+				Some("snapshots" at ossSonatype + "/content/repositories/snapshots") 
+			else
+				Some("releases" at ossSonatype + "/content/repositories/releases")
 		},
 		credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
 		pomIncludeRepository := ((_) => false),
 		pomPostProcess := (pomPostProcessTask _))
 	lazy val root = Project("root", file(".")) settings(scriptedSettings ++ rootSettings :_*)
 }
+
